@@ -13,7 +13,7 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: 'http://localhost:8080', // Replace with the port of your other localhost application
+    origin: process.env.ORIGIN_URL, // Replace with the port of your other localhost application
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

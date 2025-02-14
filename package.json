@@ -1,6 +1,6 @@
 {
   "name": "api-honesthive",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The HonestHive API and monolith backend",
   "author": "positively.io",
   "private": true,
