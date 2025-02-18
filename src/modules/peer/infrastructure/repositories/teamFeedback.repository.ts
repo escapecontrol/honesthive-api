@@ -72,6 +72,9 @@ export class TeamFeedbackRepository {
 
     const feedbackDocs = await query.exec();
 
+    // the reason for the error is due to the relationship
+    // between the member and the feedback being severed - I removed the member
+
     return feedbackDocs.map(doc => new TeamFeedback(
       doc.id,
       new TeamFeedbackTeam(

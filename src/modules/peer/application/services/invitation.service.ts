@@ -25,6 +25,8 @@ export class InvitationService {
     authProviderSub: string,
     email: string,
   ): Promise<string> {
+
+    // this check needs a new invitee to FIRST setup an account, and then accept the invitation
     const peer =
       await this.peerRepository.getByAuthProviderSub(authProviderSub);
 

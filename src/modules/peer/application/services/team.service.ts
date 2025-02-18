@@ -48,6 +48,14 @@ export class TeamService {
           peer.email,
           peer.authProviderSub,
           peer.profileUrl,),
+        [
+          new Peer(peer.id,
+            peer.firstName,
+            peer.lastName,
+            peer.email,
+            peer.authProviderSub,
+            peer.profileUrl,)
+        ]
       ),
     );
 

@@ -41,6 +41,7 @@ export class InvitationSentListener {
    */
   @OnEvent('invitation.accepted')
   async handleInvitedMember(event: InvitationAcceptedEvent) {
+    console.log("Adding invited member to team and vice-versa.", event.accepteeId, event.teamName);
     const team = await this.teamRepository.findByNameAsync(event.teamName);
     const peer = await this.peerRepository.findByIdAsync(event.accepteeId);
 

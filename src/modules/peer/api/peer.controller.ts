@@ -57,14 +57,8 @@ export class PeerController {
     const authProviderSub = sub;
     const profile = await this.peerService.getProfileAsync(authProviderSub);
 
-    // TODO: this should be handled in the peer service
     if (!profile) {
-      return {
-        firstName: '',
-        lastName: '',
-        email: '',
-        profileUrl: '',
-      };
+      return {};
     }
 
     return {
