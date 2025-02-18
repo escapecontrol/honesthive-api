@@ -65,7 +65,7 @@ export class PeerService {
    * @param sub - The auth provider's sub identifier.
    * @returns The peer entity.
    */
-  async getProfileAsync(sub: string): Promise<Peer> {
-    return this.peerRepository.getByAuthProviderSub(sub);
+  async getProfileAsync(sub: string): Promise<Peer | null> {
+    return await this.peerRepository.getByAuthProviderSub(sub);
   }
 }

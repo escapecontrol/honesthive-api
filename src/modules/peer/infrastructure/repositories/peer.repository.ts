@@ -27,19 +27,34 @@ export class PeerRepository {
    * @returns The saved or updated peer entity.
    */
   async saveAsync(user: Peer): Promise<Peer> {
-    const existingPeer = await this.peerModel.findOne({ authProviderSub: user.authProviderSub }).exec();
+    const existingPeer = await this.peerModel
+      .findOne({ authProviderSub: user.authProviderSub })
+      .exec();
 
-    const updatedEntity = await this.peerModel.findOneAndUpdate(
-      { authProviderSub: user.authProviderSub },
-      {
-        firstName: user.firstName.getFirstName(),
-        lastName: user.lastName.getLastName(),
-        email: user.email.getValue(),
-        profileUrl: user.profileUrl?.getProfileUrl(),
-        invitedTeams: existingPeer ? existingPeer.invitedTeams : user.invitedTeams.map(team => team.id),
-      },
-      { new: true, upsert: true } // Create a new document if it doesn't exist
-    ).exec();
+    const mergedInvitedTeams = existingPeer
+      ? Array.from(
+          new Set([
+            ...existingPeer.invitedTeams,
+            ...user.invitedTeams.map((team) => team.id),
+          ]),
+        )
+      : user.invitedTeams.map((team) => team.id);
+
+    const updatedEntity = await this.peerModel
+      .findOneAndUpdate(
+        { authProviderSub: user.authProviderSub },
+        {
+          firstName: user.firstName.getFirstName(),
+          lastName: user.lastName.getLastName(),
+          email: user.email.getValue(),
+          profileUrl: user.profileUrl?.getProfileUrl(),
+          invitedTeams: mergedInvitedTeams,
+        },
+        { new: true, upsert: true }, // Create a new document if it doesn't exist
+      )
+      .populate('ownTeam') // Populate the ownTeam field
+      .populate('invitedTeams') // Populate the invitedTeams field
+      .exec();
 
     return new Peer(
       updatedEntity.id,
@@ -47,23 +62,30 @@ export class PeerRepository {
       new LastName(updatedEntity.lastName),
       new Email(updatedEntity.email),
       updatedEntity.authProviderSub,
-      updatedEntity.profileUrl ? new ProfileUrl(updatedEntity.profileUrl) : undefined,
-      updatedEntity.ownTeam ? new Team(
-        updatedEntity.ownTeam.id,
-        new TeamName(updatedEntity.ownTeam.name),
-        new TeamType(updatedEntity.ownTeam.type),
-        user, // Assuming the owner is the current user
-        [], // Assuming no members initially
-        [] // Assuming no pending members initially
-      ) : undefined,
-      updatedEntity.invitedTeams.map(team => new Team(
-        team.id,
-        new TeamName(team.name),
-        new TeamType(team.type),
-        user, // Assuming the owner is the current user
-        [], // Assuming no members initially
-        [] // Assuming no pending members initially
-      )),
+      updatedEntity.profileUrl
+        ? new ProfileUrl(updatedEntity.profileUrl)
+        : undefined,
+      updatedEntity.ownTeam
+        ? new Team(
+            updatedEntity.ownTeam.id,
+            new TeamName(updatedEntity.ownTeam.name),
+            new TeamType(updatedEntity.ownTeam.type),
+            user, // Assuming the owner is the current user
+            [], // Assuming no members initially
+            [], // Assuming no pending members initially
+          )
+        : undefined,
+      updatedEntity.invitedTeams.map(
+        (team) =>
+          new Team(
+            team.id,
+            new TeamName(team.name),
+            new TeamType(team.type),
+            user, // Assuming the owner is the current user
+            [], // Assuming no members initially
+            [], // Assuming no pending members initially
+          ),
+      ),
     );
   }
 
@@ -75,11 +97,13 @@ export class PeerRepository {
    * @returns void
    */
   async assignOwnTeamAsync(peerId: string, teamId: string): Promise<void> {
-    await this.peerModel.findByIdAndUpdate(
-      peerId,
-      { ownTeam: teamId }, // Set the ownTeam field as an ObjectId
-      { new: true }
-    ).exec();
+    await this.peerModel
+      .findByIdAndUpdate(
+        peerId,
+        { ownTeam: teamId }, // Set the ownTeam field as an ObjectId
+        { new: true },
+      )
+      .exec();
   }
 
   /**
@@ -108,7 +132,10 @@ export class PeerRepository {
    * @returns The peer entity, or null if not found.
    */
   async getByAuthProviderSub(authProviderSub: string): Promise<Peer | null> {
-    const userDoc = await this.peerModel.findOne({ authProviderSub }).populate('ownTeam').exec();
+    const userDoc = await this.peerModel
+      .findOne({ authProviderSub })
+      .populate('ownTeam')
+      .exec();
     if (!userDoc) {
       return null;
     }
@@ -120,21 +147,25 @@ export class PeerRepository {
       new Email(userDoc.email),
       userDoc.authProviderSub,
       userDoc.profileUrl ? new ProfileUrl(userDoc.profileUrl) : undefined,
-      userDoc.ownTeam ? new Team(
-        userDoc.ownTeam.id,
-        new TeamName(userDoc.ownTeam.name),
-        new TeamType(userDoc.ownTeam.type),
-        new Peer(
-          userDoc.id,
-          new FirstName(userDoc.firstName),
-          new LastName(userDoc.lastName),
-          new Email(userDoc.email),
-          userDoc.authProviderSub,
-          userDoc.profileUrl ? new ProfileUrl(userDoc.profileUrl) : undefined
-        ),
-        [], // Assuming no members initially
-        [] // Assuming no pending members initially
-      ) : undefined,
+      userDoc.ownTeam
+        ? new Team(
+            userDoc.ownTeam.id,
+            new TeamName(userDoc.ownTeam.name),
+            new TeamType(userDoc.ownTeam.type),
+            new Peer(
+              userDoc.id,
+              new FirstName(userDoc.firstName),
+              new LastName(userDoc.lastName),
+              new Email(userDoc.email),
+              userDoc.authProviderSub,
+              userDoc.profileUrl
+                ? new ProfileUrl(userDoc.profileUrl)
+                : undefined,
+            ),
+            [], // Assuming no members initially
+            [], // Assuming no pending members initially
+          )
+        : undefined,
     );
   }
 
@@ -145,11 +176,14 @@ export class PeerRepository {
    * @returns The peer entity.
    */
   async findByIdAsync(id: string): Promise<Peer | null> {
-    const userDoc = await this.peerModel.findById(id).populate('ownTeam').exec();
+    const userDoc = await this.peerModel
+      .findById(id)
+      .populate('ownTeam')
+      .exec();
     if (!userDoc) {
       return null;
     }
-    
+
     return new Peer(
       userDoc.id,
       new FirstName(userDoc.firstName),
@@ -157,21 +191,25 @@ export class PeerRepository {
       new Email(userDoc.email),
       userDoc.authProviderSub,
       userDoc.profileUrl ? new ProfileUrl(userDoc.profileUrl) : undefined,
-      userDoc.ownTeam ? new Team(
-        userDoc.ownTeam.id,
-        new TeamName(userDoc.ownTeam.name),
-        new TeamType(userDoc.ownTeam.type),
-        new Peer(
-          userDoc.id,
-          new FirstName(userDoc.firstName),
-          new LastName(userDoc.lastName),
-          new Email(userDoc.email),
-          userDoc.authProviderSub,
-          userDoc.profileUrl ? new ProfileUrl(userDoc.profileUrl) : undefined
-        ),
-        [], // Assuming no members initially
-        [] // Assuming no pending members initially
-      ) : undefined,
+      userDoc.ownTeam
+        ? new Team(
+            userDoc.ownTeam.id,
+            new TeamName(userDoc.ownTeam.name),
+            new TeamType(userDoc.ownTeam.type),
+            new Peer(
+              userDoc.id,
+              new FirstName(userDoc.firstName),
+              new LastName(userDoc.lastName),
+              new Email(userDoc.email),
+              userDoc.authProviderSub,
+              userDoc.profileUrl
+                ? new ProfileUrl(userDoc.profileUrl)
+                : undefined,
+            ),
+            [], // Assuming no members initially
+            [], // Assuming no pending members initially
+          )
+        : undefined,
     );
   }
 }
