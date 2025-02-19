@@ -84,7 +84,10 @@ export class PeerController {
       body.type,
     );
 
-    return {};
+    return {
+      message: 'Team created successfully.',
+      team: team,
+    };
   }
 
   @Get('me/own-team')

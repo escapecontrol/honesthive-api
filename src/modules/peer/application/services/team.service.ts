@@ -7,6 +7,7 @@ import { Team } from '../../domain/entities/team.entity';
 import { TeamName } from '../../domain/value-objects/teamName.vo';
 import { TeamType } from '../../domain/value-objects/teamType.vo';
 import { Peer } from '../../domain/entities/peer.entity';
+import { TeamDTO } from '../dtos/team';
 
 @Injectable()
 export class TeamService {
@@ -29,7 +30,7 @@ export class TeamService {
     authProviderSub: string,
     teamName: string,
     teamType: string,
-  ): Promise<void> {
+  ): Promise<TeamDTO> {
     const peer =
       await this.peerRepository.getByAuthProviderSub(authProviderSub);
 
@@ -67,6 +68,11 @@ export class TeamService {
         team.name.getTeamName(),
         team.type.getTeamType(),
       ),
+    );
+
+    return new TeamDTO(
+      team.id,
+      team.name.getTeamName(),
     );
   }
 
