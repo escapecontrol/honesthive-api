@@ -21,10 +21,10 @@ export class MailerSendService {
    */
   async sendEmail(to: string, templateId: string, variables: Record<string, any>): Promise<void> {
     const recipients = [new Recipient(to)];
-    const sentFrom = new Sender("test@gmail.com", "Test User");
+    const sentFrom = new Sender("info@honesthive.io", "HonestHive [Do Not Reply]");
     const personalization = [
       {
-        email: "test@gmail.com",
+        email: "info@honesthive.io",
         data: {
           team_name: variables.teamName,
           account_name: process.env.MAILERSEND_ACCOUNT_NAME,
