@@ -8,6 +8,7 @@ import { TeamName } from '../../domain/value-objects/teamName.vo';
 import { TeamType } from '../../domain/value-objects/teamType.vo';
 import { Peer } from '../../domain/entities/peer.entity';
 import { TeamDTO } from '../dtos/team';
+import { MemberDTO } from '../dtos/member';
 
 @Injectable()
 export class TeamService {
@@ -43,20 +44,24 @@ export class TeamService {
         '',
         new TeamName(teamName),
         new TeamType(teamType),
-        new Peer(peer.id,
+        new Peer(
+          peer.id,
           peer.firstName,
           peer.lastName,
           peer.email,
           peer.authProviderSub,
-          peer.profileUrl,),
+          peer.profileUrl,
+        ),
         [
-          new Peer(peer.id,
+          new Peer(
+            peer.id,
             peer.firstName,
             peer.lastName,
             peer.email,
             peer.authProviderSub,
-            peer.profileUrl,)
-        ]
+            peer.profileUrl,
+          ),
+        ],
       ),
     );
 
@@ -73,6 +78,26 @@ export class TeamService {
     return new TeamDTO(
       team.id,
       team.name.getTeamName(),
+      team.members.map(
+        (member) =>
+          new MemberDTO(
+            member.id,
+            member.firstName.getFirstName() +
+              ' ' +
+              member.lastName.getLastName(),
+            member.email.getValue(),
+            member.profileUrl.getProfileUrl(),
+          ),
+      ),
+      team.pendingMembers.map(
+        (member) =>
+          new MemberDTO(
+            member.id,
+            'Unknown',
+            member.email.getValue(),
+            'Unknown',
+          ),
+      ),
     );
   }
 
@@ -93,8 +118,12 @@ export class TeamService {
    * @returns The collection of team entities.
    */
   async getMyTeamsAsync(authProviderSub: string): Promise<Team[]> {
-    const ownTeam = await this.teamRepository.getTeamByAuthProviderSub(authProviderSub);
-    const invitedTeams = await this.teamRepository.getInvitedTeamsByAuthProviderSub(authProviderSub);
+    const ownTeam =
+      await this.teamRepository.getTeamByAuthProviderSub(authProviderSub);
+    const invitedTeams =
+      await this.teamRepository.getInvitedTeamsByAuthProviderSub(
+        authProviderSub,
+      );
 
     const teams: Team[] = [];
     if (ownTeam) {

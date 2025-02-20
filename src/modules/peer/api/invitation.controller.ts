@@ -88,8 +88,11 @@ export class InvitationController {
     const { sub } = request.user;
     const authProviderSub = sub;
 
-    await this.invitationService.acceptInvitationAsync(authProviderSub, slug);
+    const acceptedTeam = await this.invitationService.acceptInvitationAsync(authProviderSub, slug);
 
-    return { message: 'Invitation accepted successfully' };
+    return { 
+      message: 'Invitation accepted successfully',
+      team: acceptedTeam,
+    };
   }
 }
