@@ -24,7 +24,7 @@ export class MailerSendService {
     const sentFrom = new Sender("info@honesthive.io", "HonestHive [Do Not Reply]");
     const personalization = [
       {
-        email: "info@honesthive.io",
+        email: to,
         data: {
           team_name: variables.teamName,
           account_name: process.env.MAILERSEND_ACCOUNT_NAME,
@@ -44,6 +44,7 @@ export class MailerSendService {
     try {
       await this.mailerSend.email.send(emailParams);
     } catch (error) {
+      console.error('Error using mailersend: ', error);
       throw new Error('Failed to send email.');
     }
   }
