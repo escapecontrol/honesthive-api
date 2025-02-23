@@ -76,6 +76,8 @@ export class InvitationService {
     );
 
     console.log('Before sending email');
+    console.log('process.env.FEATURE_FLAG_MAILER_SEND_ENABLED', process.env.FEATURE_FLAG_MAILER_SEND_ENABLED);
+
     if (process.env.FEATURE_FLAG_MAILER_SEND_ENABLED === 'true') {
       console.log('Sending email');
       await this.mailerSendService.sendEmail(
