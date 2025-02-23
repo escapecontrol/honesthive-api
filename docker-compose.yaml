@@ -5,7 +5,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mungo
       MONGO_INITDB_ROOT_PASSWORD: admin
-      MONGO_INITDB_DATABASE: kudos-feedback
+      MONGO_INITDB_DATABASE: honestHive
     ports:
       - "27017:27017"
     volumes:
