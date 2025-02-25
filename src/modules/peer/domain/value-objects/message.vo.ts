@@ -9,9 +9,15 @@ export class Message {
   }
 
   private isValidMessage(message: string): boolean {
-    // Check if the message is not empty, contains valid characters, and has at least 3 words
-    const wordCount = message.trim().split(/\s+/).length;
+    // Check if the message is not empty, contains valid characters, and has at least 3 words or emojis
+    const wordCount = this.countWordsAndEmojis(message);
     return message.length > 0 && /^[a-zA-Z0-9\s.,!?'"-]+$/.test(message) && wordCount >= 3;
+  }
+
+  private countWordsAndEmojis(message: string): number {
+    // Match words and emojis separately
+    const wordsAndEmojis = message.match(/(\p{L}+|\p{N}+|[\p{Emoji_Presentation}\p{Emoji}\uFE0F])/gu);
+    return wordsAndEmojis ? wordsAndEmojis.length : 0;
   }
 
   public getMessage(): string {
