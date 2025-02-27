@@ -18,6 +18,11 @@ export class OutboxProcessor {
       try {
         // Process the message based on its event type
         switch (message.eventType) {
+          case 'feedback.given':
+            // Handle the feedback given event
+            this.logger.log('Processing feedback given event:', message.payload);
+            break;
+
           case 'invitation.accepted':
             // Handle the invitation accepted event
             this.logger.log('Processing invitation accepted event:', message.payload);

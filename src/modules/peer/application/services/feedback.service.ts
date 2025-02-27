@@ -5,12 +5,15 @@ import { Feedback } from '../../domain/entities/feedback.entity';
 import { FeedbackRepository } from '../../infrastructure/repositories/feedback.repository';
 import { Message } from '../../domain/value-objects/message.vo';
 import { FeedbackGivenEvent } from 'src/shared/domain/events/feedback/feedback-given.event';
+import { OutboxRepository } from '../../infrastructure/repositories/outbox.repository';
+import { Outbox } from '../../domain/entities/outbox.entity';
 
 @Injectable()
 export class FeedbackService {
   constructor(
     private readonly peerRepository: PeerRepository,
     private readonly feedbackRepository: FeedbackRepository,
+    private readonly outboxRepository: OutboxRepository,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -38,19 +41,29 @@ export class FeedbackService {
     const team = peer.ownTeam ?? toMember.ownTeam;
 
     const feedback = new Feedback('', peer, toMember, new Message(message), new Date());
-
     const savedFeedback = await this.feedbackRepository.saveAsync(feedback);
 
+    const feedbackEventType = 'feedback.given';
+    const feedbackEvent = new FeedbackGivenEvent(
+      savedFeedback.id,
+      team.id,
+      peer.id,
+      toMember.id,
+      message,
+      savedFeedback.createdAt,
+    );
+
+    await this.outboxRepository.saveAsync(new Outbox(
+      '',
+      feedbackEventType,
+      feedbackEvent,
+      new Date(),
+      false,
+    ));
+
     this.eventEmitter.emit(
-      'feedback.given',
-      new FeedbackGivenEvent(
-        savedFeedback.id,
-        team.id,
-        peer.id,
-        toMember.id,
-        message,
-        savedFeedback.createdAt,
-      ),
+      feedbackEventType,
+      feedbackEvent,
     );
 
     return savedFeedback;
