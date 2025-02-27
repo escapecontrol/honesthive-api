@@ -24,6 +24,9 @@ import { FeedbackGivenListener } from './application/eventListeners/feedbackGive
 import { TeamFeedbackRepository } from './infrastructure/repositories/teamFeedback.repository';
 import { TeamFeedbackSchema } from './infrastructure/schemas/teamFeedback.schema';
 import { TeamFeedbackService } from './application/services/teamFeedback.service';
+import { OutboxSchema } from './infrastructure/schemas/outbox.schema';
+import { OutboxRepository } from './infrastructure/repositories/outbox.repository';
+import { OutboxProcessor } from './infrastructure/processors/outbox.processor';
 
 @Module({
   imports: [
@@ -33,6 +36,7 @@ import { TeamFeedbackService } from './application/services/teamFeedback.service
       { name: 'Invitation', schema: InvitationSchema },
       { name: 'Feedback', schema: FeedbackSchema },
       { name: 'TeamFeedback', schema: TeamFeedbackSchema },
+      { name: 'Outbox', schema: OutboxSchema },
     ]),
   ],
   controllers: [
@@ -57,6 +61,8 @@ import { TeamFeedbackService } from './application/services/teamFeedback.service
     FeedbackGivenListener,
     TeamFeedbackRepository,
     TeamFeedbackService,
+    OutboxRepository,
+    OutboxProcessor,
   ],
 })
 export class PeerModule {}
