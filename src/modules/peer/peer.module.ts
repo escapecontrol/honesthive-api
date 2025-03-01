@@ -27,6 +27,7 @@ import { TeamFeedbackService } from './application/services/teamFeedback.service
 import { OutboxSchema } from './infrastructure/schemas/outbox.schema';
 import { OutboxRepository } from './infrastructure/repositories/outbox.repository';
 import { OutboxProcessor } from './infrastructure/processors/outbox.processor';
+import { OpenAIService } from './infrastructure/services/openAi.service';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { OutboxProcessor } from './infrastructure/processors/outbox.processor';
     TeamFeedbackService,
     OutboxRepository,
     OutboxProcessor,
+    OpenAIService,
   ],
 })
 export class PeerModule {}

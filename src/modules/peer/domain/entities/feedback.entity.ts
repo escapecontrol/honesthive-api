@@ -1,7 +1,6 @@
 import { Message } from "../value-objects/message.vo";
 import { Peer } from "./peer.entity";
 
-
 export class Feedback {
   constructor(
     public readonly id: string,

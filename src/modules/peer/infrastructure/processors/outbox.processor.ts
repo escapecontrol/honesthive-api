@@ -11,7 +11,7 @@ export class OutboxProcessor {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async processOutbox() {
-    this.logger.log('OutboxProcessor is processing job.');
+    this.logger.log('OutboxProcessor is checking outbox messages...');
     const unprocessedMessages = await this.outboxRepository.findUnprocessedAsync();
 
     for (const message of unprocessedMessages) {

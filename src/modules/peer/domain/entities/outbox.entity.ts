@@ -1,4 +1,3 @@
-
 export class Outbox {
   constructor(
     public readonly id: string,
