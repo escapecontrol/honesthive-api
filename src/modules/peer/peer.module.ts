@@ -28,6 +28,10 @@ import { OutboxSchema } from './infrastructure/schemas/outbox.schema';
 import { OutboxRepository } from './infrastructure/repositories/outbox.repository';
 import { OutboxProcessor } from './infrastructure/processors/outbox.processor';
 import { OpenAIService } from './infrastructure/services/openAi.service';
+import { TeamTypeService } from './application/services/teamType.service';
+import { TeamTypeRepository } from './infrastructure/repositories/teamType.repository';
+import { TeamTypeController } from './api/teamType.controller';
+import { TeamTypeSchema } from './infrastructure/schemas/teamType.schema';
 
 @Module({
   imports: [
@@ -38,6 +42,7 @@ import { OpenAIService } from './infrastructure/services/openAi.service';
       { name: 'Feedback', schema: FeedbackSchema },
       { name: 'TeamFeedback', schema: TeamFeedbackSchema },
       { name: 'Outbox', schema: OutboxSchema },
+      { name: 'TeamType', schema: TeamTypeSchema },
     ]),
   ],
   controllers: [
@@ -45,6 +50,7 @@ import { OpenAIService } from './infrastructure/services/openAi.service';
     InvitationController,
     MeController,
     FeedbackController,
+    TeamTypeController,
   ],
   providers: [
     PeerService,
@@ -65,6 +71,8 @@ import { OpenAIService } from './infrastructure/services/openAi.service';
     OutboxRepository,
     OutboxProcessor,
     OpenAIService,
+    TeamTypeService,
+    TeamTypeRepository,
   ],
 })
 export class PeerModule {}

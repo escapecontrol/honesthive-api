@@ -1,13 +1,13 @@
 import { TeamName } from '../value-objects/teamName.vo';
-import { TeamType } from '../value-objects/teamType.vo';
 import { Peer } from './peer.entity';
 import { Invitation } from './invitation.entity';
+import { StringValue } from '../value-objects/stringValue.vo';
 
 export class Team {
   constructor(
     public readonly id: string,
     public name: TeamName,
-    public type: TeamType,
+    public type: StringValue,
     public owner: Peer,
     public members: Peer[] = [],
     public pendingMembers: Invitation[] = [],

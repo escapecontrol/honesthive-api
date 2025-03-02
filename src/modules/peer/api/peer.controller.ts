@@ -104,7 +104,7 @@ export class PeerController {
 
     return {
       name: team.name.getTeamName(),
-      type: team.type.getTeamType(),
+      type: team.type.getValue(),
       members: team.members.map(member => ({
         id: member.id,
         name: `${member.firstName.getFirstName()} ${member.lastName.getLastName()}`,

@@ -30,7 +30,7 @@ export class FeedbackGivenListener {
         new TeamFeedbackTeam(
           team.id,
           team.name.getTeamName(),
-          team.type.getTeamType(),
+          team.type.getValue(),
         ),
         new TeamFeedbackMember(
           fromMember.id,
