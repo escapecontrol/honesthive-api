@@ -16,10 +16,10 @@ export class TeamTypeService {
    */
   async getAllTeamTypes(): Promise<TeamType[]> {
     // NOTE: This get operation could be optimized by using a cache.
-    const teamTypeDocuments = await this.teamTypeRepository.getAllTeamTypes();
+    const teamTypeDocuments = await this.teamTypeRepository.getAllTeamTypesAsync();
     return teamTypeDocuments.map(doc => new TeamType(
       doc.id,
-      new TeamName(doc.name),
+      new TeamName(doc.name.getTeamName()),
       doc.growthCategories.map(category => new GrowthCategory(category.name, category.description)),
       doc.createdAt,
     ));
@@ -32,13 +32,13 @@ export class TeamTypeService {
    * @returns A promise that resolves with the team type.
    */
   async getTeamTypeByName(name: string): Promise<TeamType | null> {
-    const teamTypeDocument = await this.teamTypeRepository.getTeamTypeByName(name);
+    const teamTypeDocument = await this.teamTypeRepository.getTeamTypeByNameAsync(name);
     if (!teamTypeDocument) {
       return null;
     }
     return new TeamType(
       teamTypeDocument.id,
-      new TeamName(teamTypeDocument.name),
+      new TeamName(teamTypeDocument.name.getTeamName()),
       teamTypeDocument.growthCategories.map(category => new GrowthCategory(category.name, category.description)),
       teamTypeDocument.createdAt,
     );

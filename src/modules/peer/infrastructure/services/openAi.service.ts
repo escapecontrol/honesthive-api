@@ -26,6 +26,8 @@ export class OpenAIService {
   ): Promise<string> {
     const prompt = `Classify the following text into one of the following categories: ${classificationValues.join(', ')}.\n\nText: "${text}"`;
 
+    this.logger.debug(`Classifying prompt: ${prompt}`);
+
     try {
       const response = await this.openai.chat.completions.create({
         model: 'gpt-4',

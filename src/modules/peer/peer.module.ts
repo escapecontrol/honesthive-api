@@ -32,6 +32,8 @@ import { TeamTypeService } from './application/services/teamType.service';
 import { TeamTypeRepository } from './infrastructure/repositories/teamType.repository';
 import { TeamTypeController } from './api/teamType.controller';
 import { TeamTypeSchema } from './infrastructure/schemas/teamType.schema';
+import { EdenAIService } from './infrastructure/services/edenAI.service';
+import { ClassifyFeedbackListener } from './application/messageListeners/classifyFeedback.listener';
 
 @Module({
   imports: [
@@ -73,6 +75,8 @@ import { TeamTypeSchema } from './infrastructure/schemas/teamType.schema';
     OpenAIService,
     TeamTypeService,
     TeamTypeRepository,
+    EdenAIService,
+    ClassifyFeedbackListener,
   ],
 })
 export class PeerModule {}

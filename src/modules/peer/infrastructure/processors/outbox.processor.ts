@@ -1,15 +1,18 @@
 import { Injectable , Logger} from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { OutboxRepository } from '../repositories/outbox.repository';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ClassifyFeedbackMessage } from 'src/shared/infrastructure/messages/classify-feedback.message';
 
 @Injectable()
 export class OutboxProcessor {
   private readonly logger = new Logger(OutboxProcessor.name);
   constructor(
     private readonly outboxRepository: OutboxRepository,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron('2 * * * * *')
   async processOutbox() {
     this.logger.log('OutboxProcessor is checking outbox messages...');
     const unprocessedMessages = await this.outboxRepository.findUnprocessedAsync();
@@ -19,8 +22,15 @@ export class OutboxProcessor {
         // Process the message based on its event type
         switch (message.eventType) {
           case 'feedback.given':
-            // Handle the feedback given event
-            this.logger.log('Processing feedback given event:', message.payload);
+            const classifyFeedbackMessageUri = "classify.feedback.message";
+            const classifyFeedbackMessage = new ClassifyFeedbackMessage(
+              message.id,
+            );
+
+            this.eventEmitter.emit(
+              classifyFeedbackMessageUri,
+              classifyFeedbackMessage,
+            );
             break;
 
           case 'invitation.accepted':
@@ -30,10 +40,6 @@ export class OutboxProcessor {
             break;
           // Add more cases for other event types
         }
-
-        // Mark the message as processed
-        message.processed = true;
-        await this.outboxRepository.saveAsync(message);
       } catch (error) {
         this.logger.error('Failed to process outbox message:', error);
       }

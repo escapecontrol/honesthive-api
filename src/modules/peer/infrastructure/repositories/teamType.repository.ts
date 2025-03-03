@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TeamTypeDocument } from '../schemas/teamType.schema';
+import { GrowthCategory, TeamType } from '../../domain/entities/teamType.entity';
+import { TeamName } from '../../domain/value-objects/teamName.vo';
 
 @Injectable()
 export class TeamTypeRepository {
@@ -14,8 +16,21 @@ export class TeamTypeRepository {
    *
    * @returns A promise that resolves with an array of all team types.
    */
-  async getAllTeamTypes(): Promise<TeamTypeDocument[]> {
-    return await this.teamTypeModel.find().exec();
+  async getAllTeamTypesAsync(): Promise<TeamType[]> {
+    const teamTypes = await this.teamTypeModel
+      .find()
+      .sort({ name: 1 })
+      .exec();
+
+    return teamTypes.map((teamType) => new TeamType(
+      teamType.id,
+      new TeamName(teamType.name),
+      teamType.growthCategories.map((category) => new GrowthCategory(
+        category.name,
+        category.description
+      )),
+      teamType.createdAt,
+    ));
   }
 
   /**
@@ -24,7 +39,17 @@ export class TeamTypeRepository {
    * @param name - The name of the team type.
    * @returns A promise that resolves with the team type document.
    */
-  async getTeamTypeByName(name: string): Promise<TeamTypeDocument | null> {
-    return await this.teamTypeModel.findOne({ name }).exec();
+  async getTeamTypeByNameAsync(name: string): Promise<TeamType | null> {
+    const teamType = await this.teamTypeModel.findOne({ name }).exec();
+
+    return teamType ? new TeamType(
+      teamType.id,
+      new TeamName(teamType.name),
+      teamType.growthCategories.map((category) => new GrowthCategory(
+        category.name,
+        category.description
+      )),
+      teamType.createdAt,
+    ) : null;
   }
 }
