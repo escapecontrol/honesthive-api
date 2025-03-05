@@ -3,7 +3,6 @@ import { FirstName } from "../value-objects/firstName.vo";
 import { InviteSlug } from "../value-objects/inviteSlug.vo";
 import { TeamName } from "../value-objects/teamName.vo";
 
-
 export class Invitation {
   constructor(
     public readonly id: string,

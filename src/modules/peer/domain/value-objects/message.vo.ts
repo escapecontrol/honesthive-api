@@ -2,7 +2,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class Message {
   constructor(private readonly message: string) {
-    console.log('Message created:', message);
+    // console.log('Message created:', message);
     if (!this.isValidMessage(message)) {
       throw new HttpException('Invalid message - it can\'t be empty and must have at least 3 words', HttpStatus.BAD_REQUEST);
     }

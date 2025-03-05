@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { TeamTypeRepository } from './../../infrastructure/repositories/teamType.repository';
+import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { FeedbackGivenEvent } from 'src/shared/domain/events/feedback/feedback-given.event';
 import { TeamFeedbackRepository } from '../../infrastructure/repositories/teamFeedback.repository';
@@ -8,8 +9,10 @@ import { PeerRepository } from '../../infrastructure/repositories/peer.repositor
 
 @Injectable()
 export class FeedbackGivenListener {
+  private readonly logger = new Logger(FeedbackGivenListener.name);
   constructor(
     private readonly teamFeedbackRepository: TeamFeedbackRepository,
+    private readonly teamTypeRepository: TeamTypeRepository,
     private readonly teamRepository: TeamRepository,
     private readonly peerRepository: PeerRepository,
   ) {}
@@ -18,7 +21,7 @@ export class FeedbackGivenListener {
   async handleTeamFeedback(event: FeedbackGivenEvent) {
     const team = await this.teamRepository.findByIdAsync(event.teamId);
 
-    console.log("Assigning feedback to team feedback collection", team.name);
+    this.logger.log(`Handle team feedback: assign feedback to team - ${team.name.getTeamName()}`);
 
     const fromMember = await this.peerRepository.findByIdAsync(event.fromMemberId);
     const toMember = await this.peerRepository.findByIdAsync(event.toMemberId);
@@ -29,7 +32,7 @@ export class FeedbackGivenListener {
         new TeamFeedbackTeam(
           team.id,
           team.name.getTeamName(),
-          team.type.getTeamType(),
+          team.type.getValue(),
         ),
         new TeamFeedbackMember(
           fromMember.id,

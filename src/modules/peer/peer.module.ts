@@ -24,6 +24,16 @@ import { FeedbackGivenListener } from './application/eventListeners/feedbackGive
 import { TeamFeedbackRepository } from './infrastructure/repositories/teamFeedback.repository';
 import { TeamFeedbackSchema } from './infrastructure/schemas/teamFeedback.schema';
 import { TeamFeedbackService } from './application/services/teamFeedback.service';
+import { OutboxSchema } from './infrastructure/schemas/outbox.schema';
+import { OutboxRepository } from './infrastructure/repositories/outbox.repository';
+import { OutboxProcessor } from './infrastructure/processors/outbox.processor';
+import { OpenAIService } from './infrastructure/services/openAi.service';
+import { TeamTypeService } from './application/services/teamType.service';
+import { TeamTypeRepository } from './infrastructure/repositories/teamType.repository';
+import { TeamTypeController } from './api/teamType.controller';
+import { TeamTypeSchema } from './infrastructure/schemas/teamType.schema';
+import { EdenAIService } from './infrastructure/services/edenAI.service';
+import { ClassifyFeedbackListener } from './application/messageListeners/classifyFeedback.listener';
 
 @Module({
   imports: [
@@ -33,6 +43,8 @@ import { TeamFeedbackService } from './application/services/teamFeedback.service
       { name: 'Invitation', schema: InvitationSchema },
       { name: 'Feedback', schema: FeedbackSchema },
       { name: 'TeamFeedback', schema: TeamFeedbackSchema },
+      { name: 'Outbox', schema: OutboxSchema },
+      { name: 'TeamType', schema: TeamTypeSchema },
     ]),
   ],
   controllers: [
@@ -40,6 +52,7 @@ import { TeamFeedbackService } from './application/services/teamFeedback.service
     InvitationController,
     MeController,
     FeedbackController,
+    TeamTypeController,
   ],
   providers: [
     PeerService,
@@ -57,6 +70,13 @@ import { TeamFeedbackService } from './application/services/teamFeedback.service
     FeedbackGivenListener,
     TeamFeedbackRepository,
     TeamFeedbackService,
+    OutboxRepository,
+    OutboxProcessor,
+    OpenAIService,
+    TeamTypeService,
+    TeamTypeRepository,
+    EdenAIService,
+    ClassifyFeedbackListener,
   ],
 })
 export class PeerModule {}

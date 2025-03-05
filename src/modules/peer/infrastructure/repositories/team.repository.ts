@@ -12,7 +12,7 @@ import { ProfileUrl } from '../../domain/value-objects/profileUrl.vo';
 import { Invitation } from '../../domain/entities/invitation.entity';
 import { InviteSlug } from '../../domain/value-objects/inviteSlug.vo';
 import { TeamName } from '../../domain/value-objects/teamName.vo';
-import { TeamType } from '../../domain/value-objects/teamType.vo';
+import { StringValue } from '../../domain/value-objects/stringValue.vo';
 
 @Injectable()
 export class TeamRepository {
@@ -32,7 +32,7 @@ export class TeamRepository {
       { name: team.name.getTeamName() }, // Query to find the team by name
       {
         name: team.name.getTeamName(),
-        type: team.type.getTeamType(),
+        type: team.type.getValue(),
         owner: team.owner.id,
         members: team.members.map(member => member.id), // Update members
         pendingMembers: team.pendingMembers.map(invitation => invitation.id), // Update pending members
@@ -43,7 +43,7 @@ export class TeamRepository {
     return new Team(
       updatedEntity.id,
       new TeamName(updatedEntity.name),
-      new TeamType(updatedEntity.type),
+      new StringValue(updatedEntity.type),
       new Peer(
         updatedEntity.owner.id,
         new FirstName(updatedEntity.owner.firstName),
@@ -134,7 +134,7 @@ export class TeamRepository {
     return new Team(
       teamDoc.id,
       new TeamName(teamDoc.name),
-      new TeamType(teamDoc.type),
+      new StringValue(teamDoc.type),
       new Peer(
         peer.id,
         new FirstName(peer.firstName),
@@ -207,7 +207,7 @@ export class TeamRepository {
       return new Team(
         teamDoc.id,
         new TeamName(teamDoc.name),
-        new TeamType(teamDoc.type),
+        new StringValue(teamDoc.type),
         new Peer(
           teamDoc.owner.id,
           new FirstName(teamDoc.owner.firstName),
@@ -287,7 +287,7 @@ export class TeamRepository {
     return new Team(
       teamDoc.id,
       new TeamName(teamDoc.name),
-      new TeamType(teamDoc.type),
+      new StringValue(teamDoc.type),
       new Peer(
         teamDoc.owner.id,
         new FirstName(teamDoc.owner.firstName),
@@ -316,7 +316,7 @@ export class TeamRepository {
     return new Team(
       teamDoc.id,
       new TeamName(teamDoc.name),
-      new TeamType(teamDoc.type),
+      new StringValue(teamDoc.type),
       new Peer(
         teamDoc.owner.id,
         new FirstName(teamDoc.owner.firstName),

@@ -1,9 +1,6 @@
 import {
   Controller,
-  Put,
-  Body,
   Get,
-  Post,
   UseGuards,
   Req,
   HttpCode,
@@ -41,7 +38,7 @@ export class MeController {
         return {
           id: team.id,
           name: team.name.getTeamName(),
-          type: team.type.getTeamType(),
+          type: team.type.getValue(),
           members: team.members.map((member) => {
             return {
               id: member.id,

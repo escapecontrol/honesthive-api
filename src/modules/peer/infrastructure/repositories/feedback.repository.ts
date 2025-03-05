@@ -21,6 +21,10 @@ export class FeedbackRepository {
       message: feedback.message.getMessage(),
       fromMemberId: feedback.FromMember.id,
       toMemberId: feedback.ToMember.id,
+      classificationResult: feedback.classificationResult ? {
+        category: feedback.classificationResult.category,
+        confidenceScore: feedback.classificationResult.confidenceScore,
+      } : undefined,
       createdAt: new Date(),
     });
 
@@ -49,6 +53,52 @@ export class FeedbackRepository {
       ),
       new Message(populatedEntity.message),
       populatedEntity.createdAt,
+      populatedEntity.classificationResult ? {
+        category: populatedEntity.classificationResult.category,
+        confidenceScore: populatedEntity.classificationResult.confidenceScore,
+      } : undefined,
+    );
+  }
+
+  /**
+   * Finds a feedback message by its ID.
+   *
+   * @param id - The ID of the feedback message to find.
+   * @returns A promise that resolves with the found feedback message, or null if not found.
+   */
+  async findByIdAsync(id: string): Promise<Feedback | null> {
+    const populatedEntity = await this.feedbackModel
+      .findById(id)
+      .populate('fromMemberId')
+      .populate('toMemberId')
+      .exec();
+
+    if (!populatedEntity) {
+      return null;
+    }
+
+    return new Feedback(
+      populatedEntity.id,
+      new Peer(
+        populatedEntity.fromMemberId.id,
+        new FirstName(populatedEntity.fromMemberId.firstName),
+        new LastName(populatedEntity.fromMemberId.lastName),
+        new Email(populatedEntity.fromMemberId.email),
+        populatedEntity.fromMemberId.authProviderSub,
+      ),
+      new Peer(
+        populatedEntity.toMemberId.id,
+        new FirstName(populatedEntity.toMemberId.firstName),
+        new LastName(populatedEntity.toMemberId.lastName),
+        new Email(populatedEntity.toMemberId.email),
+        populatedEntity.toMemberId.authProviderSub,
+      ),
+      new Message(populatedEntity.message),
+      populatedEntity.createdAt,
+      populatedEntity.classificationResult ? {
+        category: populatedEntity.classificationResult.category,
+        confidenceScore: populatedEntity.classificationResult.confidenceScore,
+      } : undefined,
     );
   }
 }

@@ -5,10 +5,10 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TeamCreatedEvent } from 'src/shared/domain/events/peer/team-created.event';
 import { Team } from '../../domain/entities/team.entity';
 import { TeamName } from '../../domain/value-objects/teamName.vo';
-import { TeamType } from '../../domain/value-objects/teamType.vo';
 import { Peer } from '../../domain/entities/peer.entity';
 import { TeamDTO } from '../dtos/team';
 import { MemberDTO } from '../dtos/member';
+import { StringValue } from '../../domain/value-objects/stringValue.vo';
 
 @Injectable()
 export class TeamService {
@@ -43,7 +43,7 @@ export class TeamService {
       new Team(
         '',
         new TeamName(teamName),
-        new TeamType(teamType),
+        new StringValue(teamType),
         new Peer(
           peer.id,
           peer.firstName,
@@ -71,7 +71,7 @@ export class TeamService {
         peer.id,
         team.id,
         team.name.getTeamName(),
-        team.type.getTeamType(),
+        team.type.getValue(),
       ),
     );
 

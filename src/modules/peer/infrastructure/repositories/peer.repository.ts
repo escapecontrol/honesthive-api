@@ -10,8 +10,8 @@ import { LastName } from '../../domain/value-objects/lastName.vo';
 import { ProfileUrl } from '../../domain/value-objects/profileUrl.vo';
 import { Team } from '../../domain/entities/team.entity';
 import { TeamName } from '../../domain/value-objects/teamName.vo';
-import { TeamType } from '../../domain/value-objects/teamType.vo';
 import { TeamDocument } from './../schemas/team.schema';
+import { StringValue } from '../../domain/value-objects/stringValue.vo';
 
 @Injectable()
 export class PeerRepository {
@@ -69,7 +69,7 @@ export class PeerRepository {
         ? new Team(
             updatedEntity.ownTeam.id,
             new TeamName(updatedEntity.ownTeam.name),
-            new TeamType(updatedEntity.ownTeam.type),
+            new StringValue(updatedEntity.ownTeam.type),
             user, // Assuming the owner is the current user
             [], // Assuming no members initially
             [], // Assuming no pending members initially
@@ -80,7 +80,7 @@ export class PeerRepository {
           new Team(
             team.id,
             new TeamName(team.name),
-            new TeamType(team.type),
+            new StringValue(team.type),
             user, // Assuming the owner is the current user
             [], // Assuming no members initially
             [], // Assuming no pending members initially
@@ -119,7 +119,7 @@ export class PeerRepository {
         invitedTeams: {
           id: team.id,
           name: team.name.getTeamName(),
-          type: team.type.getTeamType(),
+          type: team.type.getValue(),
         },
       },
     });
@@ -151,7 +151,7 @@ export class PeerRepository {
         ? new Team(
             userDoc.ownTeam.id,
             new TeamName(userDoc.ownTeam.name),
-            new TeamType(userDoc.ownTeam.type),
+            new StringValue(userDoc.ownTeam.type),
             new Peer(
               userDoc.id,
               new FirstName(userDoc.firstName),
@@ -195,7 +195,7 @@ export class PeerRepository {
         ? new Team(
             userDoc.ownTeam.id,
             new TeamName(userDoc.ownTeam.name),
-            new TeamType(userDoc.ownTeam.type),
+            new StringValue(userDoc.ownTeam.type),
             new Peer(
               userDoc.id,
               new FirstName(userDoc.firstName),

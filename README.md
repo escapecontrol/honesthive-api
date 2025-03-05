@@ -140,10 +140,21 @@ Invitations
 
 Status
 
-- Save invitation
-  - created invitation document
-  - assigns pending member to the team model
-- To do
-  - handle sending invitation on the UI
-  - send an email with MailerSend
-  - accept the invitation via endpoint and slug
+- [x] Invitations
+  - [x] created invitation document
+  - [x] assigns pending member to the team model
+  - [x] handle sending invitation on the UI
+  - [x] send an email with MailerSend
+  - [x] accept the invitation via endpoint and slug
+- [x] Feedback
+  - [x] Give feedback
+  - [x] Consuming feedback event, add to team feedback
+  - [x] Processing feedback event, classify feedback
+  - [o] Consuming classify event, update team feeback
+- [ ] Gamification
+  - [ ] Consuming classify event, increment member category points
+  - [ ] Consuming gamify event, check category points for awards
+  - [ ] Use points for something
+- [ ] Notifications
+  - [ ] Member awards
+  - [ ] Member bought something
