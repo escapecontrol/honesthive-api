@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import fetch from 'node-fetch';
+import { ClassificationDTO } from '../dtos/classification';
 
 @Injectable()
 export class EdenAIService {
@@ -15,7 +16,7 @@ export class EdenAIService {
   async classifyMessageAsync(
     text: string,
     categories: string[],
-  ): Promise<string> {
+  ): Promise<ClassificationDTO> {
     const apiKey = process.env.EDENAI_API_KEY; // Replace with your EdenAI API key
     const headers = {
       Authorization: `Bearer ${apiKey}`,
@@ -73,7 +74,7 @@ export class EdenAIService {
       this.logger.log(`Classification confidence: ${classificationConfidence}`);
       this.logger.log(`Classification result: ${classification}`);
       
-      return classification || 'Unknown';
+      return new ClassificationDTO(classification, classificationConfidence);
     } catch (error) {
       this.logger.error('Error classifying message with EdenAI:', error);
       throw new Error('Failed to classify message.');

@@ -25,13 +25,21 @@ export class FeedbackService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
+  /**
+   * Gives feedback from one peer to another.
+   *
+   * @param authProviderSub - The authentication provider's subject identifier for the peer giving feedback.
+   * @param toMemberId - The ID of the member receiving the feedback.
+   * @param message - The feedback message.
+   * @returns A promise that resolves with the saved feedback.
+   * @throws NotFoundException if the peer or the member receiving feedback is not found.
+   */
   async giveFeedbackAsync(
     authProviderSub: string,
     toMemberId: string,
     message: string,
   ): Promise<Feedback> {
-    const peer =
-      await this.peerRepository.getByAuthProviderSub(authProviderSub);
+    const peer = await this.peerRepository.getByAuthProviderSub(authProviderSub);
 
     if (!peer) {
       throw new NotFoundException('Peer was not found.');
@@ -43,8 +51,8 @@ export class FeedbackService {
       throw new NotFoundException('To member was not found.');
     }
 
-    // this is a big assumption right now, we need to handle this better
-    // this is assuming that the peer is giving feedback to a member of their own team
+    // This is a big assumption right now, we need to handle this better
+    // This is assuming that the peer is giving feedback to a member of their own team
     // or the peer is giving feedback to a member of a team that they are invited to
     const team = peer.ownTeam ?? toMember.ownTeam;
 
@@ -77,21 +85,35 @@ export class FeedbackService {
     return savedFeedback;
   }
 
+  /**
+   * Classifies a feedback message using the EdenAI service.
+   *
+   * @param teamId - The ID of the team associated with the feedback.
+   * @param feedbackId - The ID of the feedback message to classify.
+   * @param message - The feedback message to classify.
+   * @returns A promise that resolves when the classification is complete.
+   */
   async classifyFeedbackAsync(
     teamId: string,
+    feedbackId: string,
     message: string
   ): Promise<void> {
     this.logger.log("Handling feedback classification");
-    const team = await this.teamRepository.findByIdAsync(teamId);
-    const teamType = await this.teamTypeRepository.getTeamTypeByNameAsync(team.type.getValue());
 
+    const [team, feedback] = await Promise.all([
+      this.teamRepository.findByIdAsync(teamId),
+      this.feedbackRepository.findByIdAsync(feedbackId),
+    ]);
+
+    const teamType = await this.teamTypeRepository.getTeamTypeByNameAsync(team.type.getValue());
     const categories = teamType.growthCategories.map((category) => category.name);
 
     if (teamType && categories.length > 0) {
       const classification = await this.edenAIService.classifyMessageAsync(message, categories);
-      this.logger.debug(`Classification result: ${classification}`);
+      this.logger.debug(`Classification result: ${JSON.stringify(classification)}`);
 
-      // TODO: Save the classification result to the database
+      feedback.classify(classification.category, classification.confidenceScore);
+      await this.feedbackRepository.saveAsync(feedback);
     }
 
     this.logger.log("Finished handling feedback classification");

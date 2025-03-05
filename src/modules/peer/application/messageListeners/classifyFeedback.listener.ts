@@ -22,6 +22,7 @@ export class ClassifyFeedbackListener {
 
       await this.feedbackService.classifyFeedbackAsync(
         outboxMessage.payload.teamId,
+        outboxMessage.payload.feedbackId,
         outboxMessage.payload.message,
       );
 

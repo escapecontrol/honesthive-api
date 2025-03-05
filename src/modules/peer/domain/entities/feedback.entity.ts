@@ -8,5 +8,13 @@ export class Feedback {
     public readonly ToMember: Peer,
     public readonly message: Message,
     public readonly createdAt: Date,
+    public classificationResult?: {
+      category: string;
+      confidenceScore: number;
+    },
   ) {}
+
+  classify(category: string, confidenceScore: number): void {
+    this.classificationResult = { category, confidenceScore };
+  }
 }

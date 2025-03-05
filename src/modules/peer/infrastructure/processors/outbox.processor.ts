@@ -12,7 +12,7 @@ export class OutboxProcessor {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  @Cron('2 * * * * *')
+  @Cron(process.env.OUTBOX_CRON_SCHEDULE || CronExpression.EVERY_MINUTE)
   async processOutbox() {
     this.logger.log('OutboxProcessor is checking outbox messages...');
     const unprocessedMessages = await this.outboxRepository.findUnprocessedAsync();
